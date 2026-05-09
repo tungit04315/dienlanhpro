@@ -410,7 +410,6 @@
     }
 
     /* ── Hidden states ── */
-    #view-login,
     #view-app {
       display: none
     }
@@ -933,94 +932,7 @@
     </div>
   </div>
 
-  <!-- ══════════════════════════════════════════
-     LOGIN VIEW
-══════════════════════════════════════════════ -->
-  <div id="view-login"
-    class="min-h-screen flex items-center justify-center p-4 bg-gradient-to-br from-slate-900 to-sky-950">
-    <div class="absolute inset-0 overflow-hidden pointer-events-none">
-      <div class="absolute top-0 left-1/4 w-96 h-96 bg-sky-500/10 rounded-full blur-3xl"></div>
-      <div class="absolute bottom-0 right-1/4 w-72 h-72 bg-violet-500/10 rounded-full blur-3xl"></div>
-    </div>
-    <div class="relative w-full max-w-sm slide-up">
-      <div class="text-center mb-8">
-        <div
-          class="w-16 h-16 bg-white/10 backdrop-blur border border-white/20 rounded-2xl flex items-center justify-center text-3xl mx-auto mb-5 shadow-2xl">
-          ❄️</div>
-        <h1 class="text-2xl font-black text-white tracking-tight">ĐiệnLạnh Pro</h1>
-        <p class="text-sm text-sky-300 mt-1 font-medium">Hệ thống quản lý dịch vụ điện lạnh</p>
-      </div>
-      <div class="bg-white rounded-2xl p-6 shadow-2xl">
-        <div class="flex border-b border-slate-100 mb-6 gap-1">
-          <button onclick="switchAuthTab('login')" id="at-login"
-            class="flex-1 pb-3 text-sm font-bold text-sky-600 border-b-2 border-sky-500 transition-all">Đăng
-            nhập</button>
-          <button onclick="switchAuthTab('reg')" id="at-reg"
-            class="flex-1 pb-3 text-sm font-bold text-slate-400 border-b-2 border-transparent transition-all">Đăng
-            ký</button>
-        </div>
 
-        <!-- ── FORM: LOGIN ── -->
-        <div id="form-login" class="space-y-4">
-          <div>
-            <label class="block text-xs font-bold text-slate-500 uppercase tracking-wider mb-1.5">Số điện thoại hoặc
-              Email</label>
-            <input id="l-ident" class="inp" type="text" placeholder="0901 234 567 hoặc email@..."
-              autocomplete="username" />
-          </div>
-          <div>
-            <label class="block text-xs font-bold text-slate-500 uppercase tracking-wider mb-1.5">Mật khẩu</label>
-            <div class="relative">
-              <input id="l-pass" class="inp pr-10" type="password" placeholder="••••••••"
-                autocomplete="current-password" onkeydown="if(event.key==='Enter')loginUser()" />
-              <button type="button" onclick="togglePwd('l-pass','l-eye')"
-                class="absolute right-3 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-600 text-sm"
-                id="l-eye">👁</button>
-            </div>
-          </div>
-          <button onclick="loginUser()"
-            class="w-full py-3.5 bg-slate-900 hover:bg-sky-900 text-white rounded-xl font-bold text-sm transition-all shadow-lg mt-2">Đăng
-            nhập →</button>
-        </div>
-
-        <!-- ── FORM: REGISTER ── -->
-        <div id="form-reg" class="hidden space-y-4">
-          <div>
-            <label class="block text-xs font-bold text-slate-500 uppercase tracking-wider mb-1.5">Họ và tên <span
-                class="text-red-400">*</span></label>
-            <input id="r-name" class="inp" type="text" placeholder="Nguyễn Văn A" />
-          </div>
-          <div>
-            <label class="block text-xs font-bold text-slate-500 uppercase tracking-wider mb-1.5">Số điện thoại <span
-                class="text-red-400">*</span></label>
-            <input id="r-phone" class="inp" type="tel" placeholder="0901 234 567" />
-            <p class="text-[11px] text-slate-400 mt-1">📌 Dùng để đăng nhập vào hệ thống</p>
-          </div>
-          <div>
-            <label class="block text-xs font-bold text-slate-500 uppercase tracking-wider mb-1.5">Mật khẩu <span
-                class="text-red-400">*</span></label>
-            <div class="relative">
-              <input id="r-pass" class="inp pr-10" type="password" placeholder="Tối thiểu 6 ký tự"
-                autocomplete="new-password" />
-              <button type="button" onclick="togglePwd('r-pass','r-eye')"
-                class="absolute right-3 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-600 text-sm"
-                id="r-eye">👁</button>
-            </div>
-          </div>
-          <div>
-            <label class="block text-xs font-bold text-slate-500 uppercase tracking-wider mb-1.5">Xác nhận mật khẩu
-              <span class="text-red-400">*</span></label>
-            <input id="r-pass2" class="inp" type="password" placeholder="Nhập lại mật khẩu" autocomplete="new-password"
-              onkeydown="if(event.key==='Enter')registerUser()" />
-          </div>
-          <button onclick="registerUser()"
-            class="w-full py-3.5 bg-slate-900 hover:bg-sky-900 text-white rounded-xl font-bold text-sm transition-all shadow-lg mt-2">Tạo
-            tài khoản →</button>
-        </div>
-      </div>
-      <p class="text-center text-xs text-sky-400/60 mt-4 font-medium">Demo: admin@dienlanhpro.com / admin123</p>
-    </div>
-  </div>
 
   <!-- ══════════════════════════════════════════
      APP VIEW
@@ -1779,75 +1691,17 @@
     }
 
     /* ══════════════════════════════════════════
-       MODULE: Auth
+       MODULE: Auth Helpers (dùng trong home để tạo TK KTV)
     ══════════════════════════════════════════ */
-    function switchAuthTab(tab) {
-      document.getElementById('form-login').classList.toggle('hidden', tab !== 'login');
-      document.getElementById('form-reg').classList.toggle('hidden', tab !== 'reg');
-      ['login', 'reg'].forEach(t => {
-        const active = t === tab;
-        document.getElementById(`at-${t}`).className = `flex-1 pb-3 text-sm font-bold transition-all border-b-2 ${active ? 'text-sky-600 border-sky-500' : 'text-slate-400 border-transparent'}`;
-      });
-    }
-
-    async function loginUser() {
-      const ident = document.getElementById('l-ident').value.trim();
-      const pass = document.getElementById('l-pass').value;
-      if (!ident || !pass) return showToast('Nhập số điện thoại / email và mật khẩu', 'error');
-      const email = resolveIdentifier(ident);
-      if (!email) return showToast('Số điện thoại không hợp lệ', 'error');
-      setLoading(true, 'Đang đăng nhập...');
-      try { await auth.signInWithEmailAndPassword(email, pass); }
-      catch (err) {
-        setLoading(false);
-        const code = err.code || '';
-        if (code.includes('user-not-found') || code.includes('credential') || code.includes('password') || code.includes('invalid-credential')) {
-          showToast('Số điện thoại / mật khẩu không đúng', 'error');
-        } else {
-          showToast('Lỗi đăng nhập: ' + err.message, 'error');
-        }
-      }
-    }
-
-    async function registerUser() {
-      const name = document.getElementById('r-name').value.trim();
-      const phone = document.getElementById('r-phone').value.trim();
-      const pass = document.getElementById('r-pass').value;
-      const pass2 = document.getElementById('r-pass2').value;
-      if (!name) return showToast('Nhập họ và tên', 'error');
-      if (!phone) return showToast('Nhập số điện thoại', 'error');
-      const email = phoneToEmail(phone);
-      if (!email) return showToast('Số điện thoại không hợp lệ (VD: 0901234567)', 'error');
-      if (!pass) return showToast('Nhập mật khẩu', 'error');
-      if (pass !== pass2) return showToast('Mật khẩu xác nhận không khớp', 'error');
-      if (pass.length < 6) return showToast('Mật khẩu tối thiểu 6 ký tự', 'error');
-
-      setLoading(true, 'Đang tạo tài khoản...');
-      try {
-        const cred = await auth.createUserWithEmailAndPassword(email, pass);
-        // Update display name
-        await cred.user.updateProfile({ displayName: name });
-        // Save user profile to Firestore
-        await db.collection('users').doc(cred.user.uid).set({
-          name, phone, email, role: 'user',
-          createdAt: firebase.firestore.FieldValue.serverTimestamp()
-        });
-        // Pre-fill customer record
-        await upsertCustomer({ phone, name });
-      } catch (err) {
-        setLoading(false);
-        if (err.code === 'auth/email-already-in-use') {
-          showToast('Số điện thoại này đã được đăng ký', 'error');
-        } else {
-          showToast('Lỗi: ' + err.message, 'error');
-        }
-      }
-    }
 
     function logoutUser() {
       if (notifUnsub) notifUnsub();
       currentUserProfile = null;
-      auth.signOut();
+      auth.signOut().then(() => {
+        localStorage.clear();
+        sessionStorage.clear();
+        window.location.href = 'https://tungit04315.github.io/dienlanhpro/';
+      });
     }
 
     /* ══════════════════════════════════════════
@@ -1968,9 +1822,7 @@
     auth.onAuthStateChanged(async user => {
       if (!user) {
         currentUser = null; currentRole = 'user'; currentUserProfile = null;
-        document.getElementById('view-login').style.display = 'flex';
-        document.getElementById('view-app').style.display = 'none';
-        setLoading(false);
+        window.location.href = 'index.html';
         return;
       }
       currentUser = user;
@@ -1980,7 +1832,6 @@
       // Load user profile from Firestore
       await loadUserProfile(user.uid);
 
-      document.getElementById('view-login').style.display = 'none';
       document.getElementById('view-app').style.display = 'flex';
 
       const roleLabel = { admin: '🔑 Quản trị viên', technician: '👷 Kỹ thuật viên', user: '👤 Khách hàng' };
