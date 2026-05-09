@@ -1,0 +1,301 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>ĐiệnLạnh Pro – Đăng nhập</title>
+
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
+
+  <!-- Firebase SDKs (v10 compat) -->
+  <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-auth-compat.js"></script>
+
+  <style>
+    * { font-family: 'Outfit', sans-serif; }
+
+    @keyframes slideUp   { from { transform:translateY(16px); opacity:0 } to { transform:translateY(0); opacity:1 } }
+    @keyframes fadeIn    { from { opacity:0 } to { opacity:1 } }
+    @keyframes pulse-dot { 0%,100%{transform:scale(1)} 50%{transform:scale(1.4)} }
+
+    .slide-up { animation: slideUp .3s ease forwards }
+
+    .input-field {
+      width:100%; padding:12px 16px; border-radius:12px;
+      border:1.5px solid #E2E8F0; font-size:14px; outline:none;
+      transition:border-color .2s, box-shadow .2s; background:#fff;
+    }
+    .input-field:focus { border-color:#0EA5E9; box-shadow:0 0 0 3px rgba(14,165,233,.15) }
+
+    .live-dot { animation: pulse-dot 1.4s ease-in-out infinite }
+
+    @keyframes snow-a {
+      0%,100% { transform:translateY(0) rotate(0deg) }
+      40%     { transform:translateY(-18px) rotate(50deg) }
+      75%     { transform:translateY(9px) rotate(95deg) }
+    }
+    @keyframes snow-b {
+      0%,100% { transform:translateY(0) rotate(20deg) }
+      50%     { transform:translateY(-12px) rotate(-30deg) }
+    }
+    @keyframes snow-c {
+      0%,100% { transform:translateY(0) rotate(-10deg) }
+      60%     { transform:translateY(-22px) rotate(60deg) }
+    }
+    @keyframes snow-d {
+      0%,100% { transform:translateY(0) rotate(0deg) }
+      45%     { transform:translateY(-8px) rotate(-45deg) }
+    }
+    @keyframes snow-e {
+      0%,100% { transform:translateY(0) rotate(15deg) }
+      55%     { transform:translateY(-14px) rotate(-20deg) }
+    }
+    .sf-a { animation: snow-a 7s ease-in-out infinite }
+    .sf-b { animation: snow-b 5s ease-in-out infinite }
+    .sf-c { animation: snow-c 9s ease-in-out infinite }
+    .sf-d { animation: snow-d 4.5s ease-in-out infinite }
+    .sf-e { animation: snow-e 6.5s ease-in-out infinite }
+
+    #auth-login-btn:hover { background:#1e3a5f !important }
+    #auth-reg-btn:hover   { background:#1e3a5f !important }
+  </style>
+</head>
+
+<body class="min-h-screen" style="background:linear-gradient(160deg,#060D1B 0%,#091525 40%,#0C2340 70%,#071019 100%)">
+
+<!-- TOAST -->
+<div id="toast"
+  class="fixed bottom-6 left-1/2 -translate-x-1/2 z-[200] hidden px-5 py-3 rounded-2xl shadow-2xl text-white text-sm font-semibold max-w-xs text-center pointer-events-none slide-up">
+</div>
+
+<!-- LOADING OVERLAY -->
+<div id="loading-overlay"
+  class="fixed inset-0 bg-white/75 backdrop-blur-sm z-[150] hidden items-center justify-center">
+  <div class="flex flex-col items-center gap-3">
+    <div class="w-11 h-11 rounded-full border-4 border-sky-400 border-t-transparent animate-spin"></div>
+    <p class="text-sm text-slate-500 font-medium">Đang xử lý...</p>
+  </div>
+</div>
+
+<!-- AUTH VIEW -->
+<div class="min-h-screen flex flex-col relative overflow-hidden">
+
+  <!-- Glow blobs -->
+  <div class="absolute pointer-events-none" style="top:-80px;right:-80px;width:340px;height:340px;border-radius:50%;background:radial-gradient(circle,rgba(14,165,233,0.22) 0%,transparent 68%)"></div>
+  <div class="absolute pointer-events-none" style="bottom:160px;left:-80px;width:280px;height:280px;border-radius:50%;background:radial-gradient(circle,rgba(56,189,248,0.13) 0%,transparent 68%)"></div>
+  <div class="absolute pointer-events-none" style="top:40%;left:50%;transform:translate(-50%,-50%);width:200px;height:200px;border-radius:50%;background:radial-gradient(circle,rgba(99,179,237,0.07) 0%,transparent 70%)"></div>
+
+  <!-- Snowflakes -->
+  <span class="absolute sf-c pointer-events-none select-none" style="top:18px;right:22px;font-size:72px;color:#BAE6FD;opacity:0.07;line-height:1">❄</span>
+  <span class="absolute sf-a pointer-events-none select-none" style="top:55px;left:26px;font-size:44px;color:#7DD3FC;opacity:0.13;line-height:1">❄</span>
+  <span class="absolute sf-b pointer-events-none select-none" style="top:110px;left:56px;font-size:18px;color:#38BDF8;opacity:0.22;line-height:1">❄</span>
+  <span class="absolute sf-e pointer-events-none select-none" style="top:200px;right:30px;font-size:28px;color:#93C5FD;opacity:0.16;line-height:1">❄</span>
+  <span class="absolute sf-d pointer-events-none select-none" style="top:280px;right:70px;font-size:13px;color:#BAE6FD;opacity:0.25;line-height:1">❄</span>
+  <span class="absolute sf-b pointer-events-none select-none" style="bottom:250px;left:18px;font-size:22px;color:#7DD3FC;opacity:0.15;line-height:1">❄</span>
+
+  <!-- Dot-grid texture -->
+  <div class="absolute inset-0 pointer-events-none" style="background-image:radial-gradient(rgba(147,197,253,0.06) 1px,transparent 1px);background-size:32px 32px;opacity:0.7"></div>
+
+  <!-- HERO -->
+  <div class="relative z-10 flex flex-col items-center pt-14 pb-4 px-6">
+
+    <!-- Live badge -->
+    <div class="inline-flex items-center gap-2 mb-7 px-4 py-1.5 rounded-full"
+      style="background:rgba(255,255,255,0.07);border:1px solid rgba(255,255,255,0.12)">
+      <span class="live-dot w-2 h-2 rounded-full inline-block" style="background:#34D399"></span>
+      <span style="color:#6EE7B7;font-size:11px;font-weight:700;letter-spacing:0.06em">ĐANG NHẬN ĐẶT LỊCH HÔM NAY</span>
+    </div>
+
+    <!-- AC SVG Illustration -->
+    <svg viewBox="0 0 260 150" style="width:230px;margin-bottom:18px" xmlns="http://www.w3.org/2000/svg">
+      <rect x="52" y="20" width="156" height="7" rx="3.5" fill="none" stroke="rgba(255,255,255,0.12)" stroke-width="1"/>
+      <rect x="48" y="25" width="164" height="65" rx="12" fill="rgba(255,255,255,0.06)" stroke="rgba(255,255,255,0.18)" stroke-width="1.5"/>
+      <line x1="110" y1="30" x2="110" y2="86" stroke="rgba(255,255,255,0.09)" stroke-width="1"/>
+      <rect x="55" y="33" width="48" height="50" rx="7" fill="rgba(14,165,233,0.15)" stroke="rgba(56,189,248,0.3)" stroke-width="1"/>
+      <text x="79" y="57" text-anchor="middle" font-size="22" fill="#7DD3FC" opacity="0.95" font-family="'Outfit',sans-serif">❄</text>
+      <circle cx="67" cy="73" r="2.5" fill="#34D399" opacity="0.9"/>
+      <circle cx="79" cy="73" r="2.5" fill="#38BDF8" opacity="0.6"/>
+      <circle cx="91" cy="73" r="2.5" fill="rgba(255,255,255,0.2)"/>
+      <text x="79" y="66" text-anchor="middle" font-size="8" fill="rgba(255,255,255,0.45)" font-family="'Outfit',sans-serif">18°C</text>
+      <line x1="118" y1="41" x2="203" y2="41" stroke="rgba(255,255,255,0.2)" stroke-width="1.8" stroke-linecap="round"/>
+      <line x1="118" y1="51" x2="203" y2="51" stroke="rgba(255,255,255,0.2)" stroke-width="1.8" stroke-linecap="round"/>
+      <line x1="118" y1="61" x2="203" y2="61" stroke="rgba(255,255,255,0.2)" stroke-width="1.8" stroke-linecap="round"/>
+      <line x1="118" y1="71" x2="203" y2="71" stroke="rgba(255,255,255,0.2)" stroke-width="1.8" stroke-linecap="round"/>
+      <rect x="115" y="35" width="92" height="50" rx="6" fill="rgba(56,189,248,0.03)"/>
+      <path d="M85 94 Q82 108 87 126" stroke="rgba(147,210,248,0.3)" stroke-width="1.8" fill="none" stroke-linecap="round"/>
+      <path d="M130 93 Q128 110 132 132" stroke="rgba(147,210,248,0.4)" stroke-width="1.8" fill="none" stroke-linecap="round"/>
+      <path d="M175 94 Q178 108 173 124" stroke="rgba(147,210,248,0.3)" stroke-width="1.8" fill="none" stroke-linecap="round"/>
+      <text x="85"  y="136" text-anchor="middle" font-size="11" fill="rgba(147,210,248,0.45)" font-family="'Outfit',sans-serif">❄</text>
+      <text x="130" y="143" text-anchor="middle" font-size="14" fill="rgba(147,210,248,0.55)" font-family="'Outfit',sans-serif">❄</text>
+      <text x="175" y="134" text-anchor="middle" font-size="11" fill="rgba(147,210,248,0.45)" font-family="'Outfit',sans-serif">❄</text>
+      <circle cx="58"  cy="27" r="2.2" fill="none" stroke="rgba(255,255,255,0.18)" stroke-width="1"/>
+      <circle cx="202" cy="27" r="2.2" fill="none" stroke="rgba(255,255,255,0.18)" stroke-width="1"/>
+    </svg>
+
+    <h1 style="font-size:30px;font-weight:800;color:#fff;margin:0;letter-spacing:-0.5px">ĐiệnLạnh Pro</h1>
+    <p style="color:#7DD3FC;font-size:13px;margin:5px 0 0;font-weight:500">
+      Kỹ thuật viên tận nơi · Đúng giờ · Uy tín
+    </p>
+
+    <!-- Social proof chips -->
+    <div style="display:flex;gap:8px;margin-top:14px;flex-wrap:wrap;justify-content:center">
+      <span style="background:rgba(255,255,255,0.08);border:1px solid rgba(255,255,255,0.14);color:rgba(255,255,255,0.65);font-size:11px;font-weight:700;padding:5px 12px;border-radius:20px">⭐ 4.9/5</span>
+      <span style="background:rgba(255,255,255,0.08);border:1px solid rgba(255,255,255,0.14);color:rgba(255,255,255,0.65);font-size:11px;font-weight:700;padding:5px 12px;border-radius:20px">✓ 2.000+ khách hàng</span>
+      <span style="background:rgba(52,211,153,0.12);border:1px solid rgba(52,211,153,0.25);color:#6EE7B7;font-size:11px;font-weight:700;padding:5px 12px;border-radius:20px">⚡ Phản hồi trong 30 phút</span>
+    </div>
+  </div>
+
+  <!-- AUTH CARD -->
+  <div class="relative z-10 w-full mt-auto px-4 pb-8" style="max-width:460px;margin-left:auto;margin-right:auto">
+    <div style="height:20px;background:linear-gradient(to bottom,transparent,rgba(0,0,0,0.15));margin-bottom:-2px"></div>
+
+    <div style="background:#fff;border-radius:28px 28px 24px 24px;padding:24px 22px 26px;box-shadow:0 -8px 48px rgba(0,0,0,0.45),0 2px 24px rgba(0,0,0,0.15)">
+
+      <div style="width:36px;height:4px;background:#E2E8F0;border-radius:2px;margin:0 auto 20px"></div>
+
+      <!-- Tab switch -->
+      <div style="display:flex;gap:4px;background:#F1F5F9;padding:4px;border-radius:14px;margin-bottom:20px">
+        <button onclick="switchAuthTab('login')" id="atab-login"
+          style="flex:1;padding:10px 0;border-radius:10px;border:none;font-size:13px;font-weight:700;cursor:pointer;font-family:'Outfit',sans-serif;background:#0F172A;color:#fff;transition:all 0.2s;box-shadow:0 2px 8px rgba(0,0,0,0.15)">
+          Đăng nhập
+        </button>
+        <button onclick="switchAuthTab('register')" id="atab-register"
+          style="flex:1;padding:10px 0;border-radius:10px;border:none;font-size:13px;font-weight:700;cursor:pointer;font-family:'Outfit',sans-serif;background:transparent;color:#64748B;transition:all 0.2s">
+          Đăng ký
+        </button>
+      </div>
+
+      <!-- LOGIN FORM -->
+      <div id="form-login">
+        <div style="margin-bottom:14px">
+          <label style="display:block;font-size:11px;font-weight:700;color:#94A3B8;text-transform:uppercase;letter-spacing:0.08em;margin-bottom:6px">Email</label>
+          <input id="login-email" class="input-field" type="email" placeholder="you@example.com"
+            onkeydown="if(event.key==='Enter') loginUser()" />
+        </div>
+        <div style="margin-bottom:20px">
+          <label style="display:block;font-size:11px;font-weight:700;color:#94A3B8;text-transform:uppercase;letter-spacing:0.08em;margin-bottom:6px">Mật khẩu</label>
+          <input id="login-password" class="input-field" type="password" placeholder="••••••••"
+            onkeydown="if(event.key==='Enter') loginUser()" />
+        </div>
+        <button id="auth-login-btn" onclick="loginUser()"
+          style="width:100%;padding:14px;background:#0F172A;color:#fff;border:none;border-radius:14px;font-size:14px;font-weight:700;cursor:pointer;transition:background 0.2s;letter-spacing:0.02em">
+          Đăng nhập →
+        </button>
+      </div>
+
+      <!-- REGISTER FORM -->
+      <div id="form-register" class="hidden">
+        <div style="margin-bottom:14px">
+          <label style="display:block;font-size:11px;font-weight:700;color:#94A3B8;text-transform:uppercase;letter-spacing:0.08em;margin-bottom:6px">Email</label>
+          <input id="reg-email" class="input-field" type="email" placeholder="you@example.com" />
+        </div>
+        <div style="margin-bottom:20px">
+          <label style="display:block;font-size:11px;font-weight:700;color:#94A3B8;text-transform:uppercase;letter-spacing:0.08em;margin-bottom:6px">Mật khẩu</label>
+          <input id="reg-password" class="input-field" type="password" placeholder="Tối thiểu 6 ký tự"
+            onkeydown="if(event.key==='Enter') registerUser()" />
+        </div>
+        <button id="auth-reg-btn" onclick="registerUser()"
+          style="width:100%;padding:14px;background:#0F172A;color:#fff;border:none;border-radius:14px;font-size:14px;font-weight:700;cursor:pointer;transition:background 0.2s;letter-spacing:0.02em">
+          Tạo tài khoản →
+        </button>
+      </div>
+
+      <p style="text-align:center;font-size:11px;color:#64748b;margin-top:18px">
+        ĐiệnLạnh Pro © 2026 · Dịch vụ điện lạnh TP.HCM
+      </p>
+    </div>
+  </div>
+
+</div>
+
+<script>
+  /* ── Firebase Config ── */
+  const firebaseConfig = {
+    apiKey: "AIzaSyDKbvR6qTHVyzfUIBVELJCKSjKn6JYnKFU",
+    authDomain: "crm-mini-fa809.firebaseapp.com",
+    databaseURL: "https://crm-mini-fa809-default-rtdb.firebaseio.com",
+    projectId: "crm-mini-fa809",
+    storageBucket: "crm-mini-fa809.firebasestorage.app",
+    messagingSenderId: "646060870448",
+    appId: "1:646060870448:web:6fef44eb55815315dc56f5",
+    measurementId: "G-E5CQE7BGKW"
+  };
+
+  firebase.initializeApp(firebaseConfig);
+  const auth = firebase.auth();
+
+  /* ── Toast ── */
+  function showToast(msg, type = 'success') {
+    const t = document.getElementById('toast');
+    const colors = { success:'#10B981', error:'#EF4444', info:'#0EA5E9' };
+    t.style.background = colors[type] || colors.info;
+    t.textContent = msg;
+    t.classList.remove('hidden');
+    clearTimeout(t._timer);
+    t._timer = setTimeout(() => t.classList.add('hidden'), 3200);
+  }
+
+  function showLoading() { document.getElementById('loading-overlay').classList.replace('hidden','flex') }
+  function hideLoading() { document.getElementById('loading-overlay').classList.replace('flex','hidden') }
+
+  /* ── Auth tab switch ── */
+  function switchAuthTab(tab) {
+    document.getElementById('form-login').classList.toggle('hidden', tab !== 'login');
+    document.getElementById('form-register').classList.toggle('hidden', tab !== 'register');
+    const loginBtn = document.getElementById('atab-login');
+    const regBtn   = document.getElementById('atab-register');
+    const activeStyle   = "flex:1;padding:10px 0;border-radius:10px;border:none;font-size:13px;font-weight:700;cursor:pointer;font-family:'Outfit',sans-serif;background:#0F172A;color:#fff;transition:all 0.2s;box-shadow:0 2px 8px rgba(0,0,0,0.15)";
+    const inactiveStyle = "flex:1;padding:10px 0;border-radius:10px;border:none;font-size:13px;font-weight:700;cursor:pointer;font-family:'Outfit',sans-serif;background:transparent;color:#64748B;transition:all 0.2s";
+    loginBtn.style.cssText = tab === 'login' ? activeStyle : inactiveStyle;
+    regBtn.style.cssText   = tab === 'register' ? activeStyle : inactiveStyle;
+  }
+
+  /* ── Login ── */
+  function loginUser() {
+    const email = document.getElementById('login-email').value.trim();
+    const pass  = document.getElementById('login-password').value;
+    if (!email || !pass) return showToast('Vui lòng điền đầy đủ thông tin', 'error');
+    showLoading();
+    auth.signInWithEmailAndPassword(email, pass)
+      .catch(e => { hideLoading(); showToast(authError(e.code), 'error') });
+  }
+
+  /* ── Register ── */
+  function registerUser() {
+    const email = document.getElementById('reg-email').value.trim();
+    const pass  = document.getElementById('reg-password').value;
+    if (!email || !pass) return showToast('Vui lòng điền đầy đủ thông tin', 'error');
+    if (pass.length < 6) return showToast('Mật khẩu tối thiểu 6 ký tự', 'error');
+    showLoading();
+    auth.createUserWithEmailAndPassword(email, pass)
+      .catch(e => { hideLoading(); showToast(authError(e.code), 'error') });
+  }
+
+  /* ── Auth error messages ── */
+  function authError(code) {
+    const map = {
+      'auth/user-not-found':        'Email không tồn tại',
+      'auth/wrong-password':        'Sai mật khẩu',
+      'auth/invalid-credential':    'Email hoặc mật khẩu không đúng',
+      'auth/email-already-in-use':  'Email đã được đăng ký',
+      'auth/invalid-email':         'Email không hợp lệ',
+      'auth/too-many-requests':     'Quá nhiều lần thử, vui lòng đợi',
+      'auth/network-request-failed':'Lỗi kết nối mạng',
+    };
+    return map[code] || `Lỗi (${code})`;
+  }
+
+  /* ── Auth state: nếu đã đăng nhập → redirect sang home.html ── */
+  auth.onAuthStateChanged(user => {
+    if (user) {
+      // Đã đăng nhập → chuyển sang trang chính
+      window.location.href = 'home.html';
+    } else {
+      hideLoading();
+    }
+  });
+</script>
+</body>
+</html>
